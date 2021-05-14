@@ -1,83 +1,100 @@
-import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-} from 'react-native';
+import * as React from 'react';
+
+// Chakra UI
+import {ChakraProvider} from '@chakra-ui/react';
+import {Accordion, Box} from '@chakra-ui/react';
+
+// seeti Components
+import CoinVsUsdRow from './components/CoinVsUsdRow';
+import NavBar from './components/NavBar';
+import SplashScreen from './components/SplashScreen';
+import CoinSearcher from './components/searcher/CoinSearcher';
+
+import {UseFetch} from './hooks/UseFetch';
+
+import './index.css';
+
+// DRAG N DROP
+import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd';
 
 const App: () => React$Node = () => {
+  //localStorage.removeItem("coin-list");
+  const [coins, setCoins] = React.useState(
+    JSON.parse(localStorage.getItem('coin-list')) === null
+      ? ['bitcoin', 'ethereum']
+      : JSON.parse(localStorage.getItem('coin-list')),
+  );
+  const {data} = UseFetch(
+    `https://api.coingecko.com/api/v3/coins/list?include_platform=false`,
+  );
+
+  React.useEffect(() => {
+    localStorage.setItem('all-coins', JSON.stringify(data));
+  }, [data]);
+
+  React.useEffect(() => {
+    localStorage.setItem('coin-list', JSON.stringify(coins));
+  });
+
+  React.useEffect(() => {
+    const data = localStorage.getItem('coin-list');
+    if (data) {
+      setCoins(JSON.parse(data));
+    }
+  }, []);
+
+  const handleOnDragEnd = result => {
+    if (!result.destination) return;
+    const items = Array.from(coins);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+    setCoins(items);
+  };
+
+  const coinRows = coins.map((c, index) => {
+    return (
+      <Draggable key={c} draggableId={c} index={index}>
+        {provided => (
+          <div
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}>
+            <CoinVsUsdRow coin={c} />
+          </div>
+        )}
+      </Draggable>
+    );
+  });
+
   return (
     <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>Hello world!</Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>Hello world!</Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-          </View>
-        </ScrollView>
-      </SafeAreaView>
+      <DragDropContext onDragEnd={handleOnDragEnd}>
+        <ChakraProvider>
+          <SplashScreen />
+          <NavBar />
+          <Box ml="5" mr="5">
+            <Droppable droppableId="coinsList">
+              {provided => (
+                <div
+                  className="coinsList"
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}>
+                  <Accordion
+                    defaultIndex={[0]}
+                    allowMultiple="true"
+                    align="center">
+                    {coinRows}
+                  </Accordion>
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </Box>
+          <CoinSearcher setCoins={setCoins} />
+        </ChakraProvider>
+      </DragDropContext>
     </>
   );
 };
-
-const styles = StyleSheet.create({
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
-});
 
 export default App;

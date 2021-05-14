@@ -1,0 +1,38 @@
+.App {
+  text-align: center;
+  background-color: #282c34;
+  min-height: 100vh;
+  color: white;
+  overflow-y: hidden;
+}
+
+.listItems {
+
+  margin: auto 5px;
+  margin-top: 5px;
+}
+
+/* SCROLLBAR STYLE */
+
+*::-webkit-scrollbar {
+  width: 8px;
+  /* width of the entire scrollbar */
+}
+
+*::-webkit-scrollbar-track {
+  background: rgba(100, 100, 100, 0.1);
+  /* color of the tracking area */
+  margin-top: 15px;
+  margin-bottom: 15px;
+
+  width: 1px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: black;
+  /* color of the scroll thumb */
+  border-radius: 30px;
+  /* roundness of the scroll thumb */
+  border: 1px solid lightgray;
+  /* creates padding around scroll thumb */
+}
