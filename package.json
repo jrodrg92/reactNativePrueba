@@ -2,6 +2,7 @@
   "name": "criptovikreactnative",
   "version": "0.0.1",
   "private": true,
+  "main": "public/electron.js",
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
@@ -9,7 +10,7 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint .",
-    "electron-start": "electron ./src",
+    "electron-start": "electron .",
     "build-win": "electron-builder build --win --publish never",
     "deploy-win": "electron-builder build --win --publish always",
     "build-linux": "electron-builder build --linux --publish never",
@@ -17,6 +18,7 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
+    "@babel/preset-env": "^7.14.2",
     "@chakra-ui/icons": "^1.0.13",
     "@chakra-ui/react": "^1.6.1",
     "@emotion/react": "^11.4.0",
@@ -54,6 +56,12 @@
     },
     "transformIgnorePatterns": [
       "node_modules/(?!variables/.*)"
+    ]
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
     ]
   },
   "browserslist": {
