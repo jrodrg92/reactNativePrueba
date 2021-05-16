@@ -12,7 +12,7 @@ import CoinSearcher from './components/searcher/CoinSearcher';
 
 import {UseFetch} from './hooks/UseFetch';
 
-import './index.css';
+//import './index.css';
 
 // DRAG N DROP
 import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd';
